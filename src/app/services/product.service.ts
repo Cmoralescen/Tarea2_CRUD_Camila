@@ -11,6 +11,7 @@ import { CategoryService } from './category.service';
 export class ProductService extends BaseService<IProduct> {
   protected override source: string = 'products';
   private productSignal = signal<IProduct[]>([]);
+  private allProducts: IProduct[] = []; 
   
   get products$() {
     return this.productSignal;
@@ -53,6 +54,7 @@ export class ProductService extends BaseService<IProduct> {
             } as IProduct;
           });
           
+          this.allProducts = productsWithCategory;
           this.productSignal.set(productsWithCategory);
         });
       },
@@ -64,6 +66,43 @@ export class ProductService extends BaseService<IProduct> {
 
   getProductById(id: number) {
     return this.http.get<IResponse<any>>(`${this.source}/${id}`);
+  }
+
+  filterProducts(filters: any) {
+    let filteredProducts = [...this.allProducts];
+
+    if (filters.name && filters.name.trim() !== '') {
+      filteredProducts = filteredProducts.filter(product =>
+        product.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+
+    if (filters.categoryId && filters.categoryId !== '') {
+      const categoryId = parseInt(filters.categoryId);
+      filteredProducts = filteredProducts.filter(product =>
+        product.category?.id === categoryId
+      );
+    }
+
+    if (filters.minPrice && filters.minPrice !== '') {
+      const minPrice = parseFloat(filters.minPrice);
+      filteredProducts = filteredProducts.filter(product =>
+        product.price >= minPrice
+      );
+    }
+
+    if (filters.maxPrice && filters.maxPrice !== '') {
+      const maxPrice = parseFloat(filters.maxPrice);
+      filteredProducts = filteredProducts.filter(product =>
+        product.price <= maxPrice
+      );
+    }
+
+    this.productSignal.set(filteredProducts);
+  }
+
+  clearFilters() {
+    this.productSignal.set(this.allProducts);
   }
 
   save(item: IProduct, categoryId: number) {

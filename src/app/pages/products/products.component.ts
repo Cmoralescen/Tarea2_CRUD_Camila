@@ -2,11 +2,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductFormComponent } from '../../components/products-form/products-form.component';
+import { ProductSearchComponent } from '../../components/products-search/products-search.component';
 import { ProductsTableComponent } from '../../components/products-table/products-table.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
-import { IProduct } from '../../interfaces';
+import { AuthService } from '../../services/auth.service';
+import { IProduct, IRoleType } from '../../interfaces';
 
 @Component({
   selector: 'app-products',
@@ -14,6 +16,7 @@ import { IProduct } from '../../interfaces';
   imports: [
     CommonModule,
     ProductFormComponent,
+    ProductSearchComponent,
     ProductsTableComponent,
     PaginationComponent
   ],
@@ -23,16 +26,23 @@ import { IProduct } from '../../interfaces';
 export class ProductsComponent implements OnInit {
   productService: ProductService = inject(ProductService);
   categoryService: CategoryService = inject(CategoryService);
+  authService: AuthService = inject(AuthService);
   private fb: FormBuilder = inject(FormBuilder);
 
   form!: FormGroup;
   isEdit: boolean = false;
-  areActionsAvailable: boolean = true; // Cambiar según el rol del usuario
+  isAdmin: boolean = false;
 
   ngOnInit(): void {
     this.initForm();
+    this.checkUserRole();
     this.productService.getAll();
     this.categoryService.getAll();
+  }
+
+  checkUserRole() {
+    this.isAdmin = this.authService.hasRole(IRoleType.admin) || 
+                   this.authService.hasRole(IRoleType.superAdmin);
   }
 
   initForm() {
@@ -59,22 +69,18 @@ export class ProductsComponent implements OnInit {
     }
   }
 
- edit(product: IProduct) {
-
-  
-  this.isEdit = true;
-  this.form.patchValue({
-    id: product.id,
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    stock: product.stock,
-    categoryId: product.category?.id
-  });
-  
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+  edit(product: IProduct) {
+    this.isEdit = true;
+    this.form.patchValue({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      categoryId: product.category?.id
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   delete(product: IProduct) {
     if (confirm(`Are you sure you want to delete the product "${product.name}"?`)) {
@@ -85,5 +91,20 @@ export class ProductsComponent implements OnInit {
   resetForm() {
     this.form.reset();
     this.isEdit = false;
+  }
+
+  searchProducts(filters: any) {
+    console.log('Search filters:', filters);
+    
+    const isEmpty = !filters.name && 
+                    !filters.categoryId && 
+                    !filters.minPrice && 
+                    !filters.maxPrice;
+    
+    if (isEmpty) {
+      this.productService.clearFilters();
+    } else {
+      this.productService.filterProducts(filters);
+    }
   }
 }
