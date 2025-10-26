@@ -1,1 +1,97 @@
-<p>products-form works!</p>
+<form [formGroup]="form">
+  <div>
+    <h2 class="mb-3">{{ isEdit ? 'Edit Product' : 'Add Product' }}</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="mb-2">
+        <label class="mb-1" for="name">Name*</label>
+        <input id="name" formControlName="name" type="text" class="form-control">
+        @if (form.controls['name'].invalid && (form.controls['name'].dirty || form.controls['name'].touched)) {
+          <p class="text-danger my-1 p-absolute">
+            @if (form.controls['name'].errors?.['required']) {
+              Name is required
+            }
+            @if (form.controls['name'].errors?.['minlength']) {
+              Name must be at least 3 characters
+            }
+          </p>
+        }
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="mb-2">
+        <label class="mb-1" for="description">Description*</label>
+        <input id="description" formControlName="description" type="text" class="form-control">
+        @if (form.controls['description'].invalid && (form.controls['description'].dirty || form.controls['description'].touched)) {
+          <p class="text-danger my-1 p-absolute">
+            @if (form.controls['description'].errors?.['required']) {
+              Description is required
+            }
+            @if (form.controls['description'].errors?.['minlength']) {
+              Description must be at least 5 characters
+            }
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="mb-2">
+        <label class="mb-1" for="price">Price*</label>
+        <input id="price" formControlName="price" type="number" step="0.01" class="form-control">
+        @if (form.controls['price'].invalid && (form.controls['price'].dirty || form.controls['price'].touched)) {
+          <p class="text-danger my-1 p-absolute">
+            @if (form.controls['price'].errors?.['required']) {
+              Price is required
+            }
+            @if (form.controls['price'].errors?.['min']) {
+              Price must be greater than 0
+            }
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="mb-2">
+        <label class="mb-1" for="stock">Stock*</label>
+        <input id="stock" formControlName="stock" type="number" class="form-control">
+        @if (form.controls['stock'].invalid && (form.controls['stock'].dirty || form.controls['stock'].touched)) {
+          <p class="text-danger my-1 p-absolute">
+            @if (form.controls['stock'].errors?.['required']) {
+              Stock is required
+            }
+            @if (form.controls['stock'].errors?.['min']) {
+              Stock must be 0 or greater
+            }
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="mb-2">
+        <label class="mb-1" for="categoryId">Category*</label>
+        <select id="categoryId" formControlName="categoryId" class="form-control">
+          <option value="">Select a category</option>
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        @if (form.controls['categoryId'].invalid && (form.controls['categoryId'].dirty || form.controls['categoryId'].touched)) {
+          <p class="text-danger my-1 p-absolute">Category is required</p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 d-flex align-items-center mt-3">
+      <button (click)="callSaveMethod.emit(form.value)" [disabled]="form.invalid" class="btn btn-primary" type="button">
+        {{ isEdit ? 'Update' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,42 @@
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (products.length === 0) {
+        <tr>
+          <td colspan="7" class="text-center">No products found</td>
+        </tr>
+      }
+      @for (product of products; track product.id) {
+        <tr>
+          <td>{{ product.id }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.price ? '$' + product.price : 'N/A' }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ product.category?.name || 'N/A' }}</td>
+          <td>
+            <button (click)="callEditMethod.emit(product)" class="btn btn-sm btn-warning me-2" type="button">
+              Edit
+            </button>
+            @if (areActionsAvailable) {
+              <button (click)="callDeleteMethod.emit(product)" class="btn btn-sm btn-danger" type="button">
+                Delete
+              </button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

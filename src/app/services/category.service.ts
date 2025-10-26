@@ -29,7 +29,7 @@ export class CategoryService extends BaseService<ICategory> {
     this.findAllWithParams({ page: this.search.page, size: this.search.size }).subscribe({
       next: (response: IResponse<ICategory[]>) => {
         this.search = { ...this.search, ...response.meta };
-        this.search.pageNumber = this.search.page; // Sincronizar pageNumber con page
+        this.search.pageNumber = this.search.page; 
         this.totalItems = Array.from({ length: this.search.totalPages ? this.search.totalPages : 0 }, (_, i) => i + 1);
         this.categorySignal.set(response.data);
       },
