@@ -3,7 +3,6 @@ import { IProduct, IResponse, ISearch } from '../interfaces';
 import { BaseService } from './base-service';
 import { AuthService } from './auth.service';
 import { AlertService } from './alert.service';
-import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -39,28 +38,27 @@ export class ProductService extends BaseService<IProduct> {
   }
 
   save(item: IProduct, categoryId: number) {
-    const params = new HttpParams().set('categoryId', categoryId.toString());
-    this.http.post<IResponse<IProduct>>(`${this.source}`, item, { params }).subscribe({
+    this.addWithParams({ categoryId }, item).subscribe({
       next: (response: IResponse<IProduct>) => {
         this.alertService.displayAlert('success', response.message, 'center', 'top', ['success-snackbar']);
         this.getAll();
       },
       error: (err: any) => {
-        this.alertService.displayAlert('error', 'An error occurred adding the product', 'center', 'top', ['error-snackbar']);
+        this.alertService.displayAlert('error', 'An error occurred while adding the product!!!!', 'center', 'top', ['error-snackbar']);
         console.error('error', err);
       }
     });
   }
 
   update(item: IProduct, categoryId: number) {
-    const params = new HttpParams().set('categoryId', categoryId.toString());
+    const params = this.buildUrlParams({ categoryId });
     this.http.put<IResponse<IProduct>>(`${this.source}/${item.id}`, item, { params }).subscribe({
       next: (response: IResponse<IProduct>) => {
         this.alertService.displayAlert('success', response.message, 'center', 'top', ['success-snackbar']);
         this.getAll();
       },
       error: (err: any) => {
-        this.alertService.displayAlert('error', 'An error occurred updating the product', 'center', 'top', ['error-snackbar']);
+        this.alertService.displayAlert('error', 'An error occurred while updating the product!!!!', 'center', 'top', ['error-snackbar']);
         console.error('error', err);
       }
     });
@@ -73,7 +71,7 @@ export class ProductService extends BaseService<IProduct> {
         this.getAll();
       },
       error: (err: any) => {
-        this.alertService.displayAlert('error', 'An error occurred deleting the product', 'center', 'top', ['error-snackbar']);
+        this.alertService.displayAlert('error', 'An error occurred while deleting the product!!!!', 'center', 'top', ['error-snackbar']);
         console.error('error', err);
       }
     });

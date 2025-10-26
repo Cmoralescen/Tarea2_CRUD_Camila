@@ -10,16 +10,17 @@ import { AlertService } from './alert.service';
 export class CategoryService extends BaseService<ICategory> {
   protected override source: string = 'categories';
   private categorySignal = signal<ICategory[]>([]);
-  
+
   get categories$() {
     return this.categorySignal;
   }
 
-  public search: ISearch = { 
+  public search: ISearch = {
     page: 1,
+    pageNumber: 1,
     size: 10
   }
-  
+
   public totalItems: any = [];
   private authService: AuthService = inject(AuthService);
   private alertService: AlertService = inject(AlertService);
@@ -27,8 +28,9 @@ export class CategoryService extends BaseService<ICategory> {
   getAll() {
     this.findAllWithParams({ page: this.search.page, size: this.search.size }).subscribe({
       next: (response: IResponse<ICategory[]>) => {
-        this.search = {...this.search, ...response.meta};
-        this.totalItems = Array.from({length: this.search.totalPages ? this.search.totalPages : 0}, (_, i) => i + 1);
+        this.search = { ...this.search, ...response.meta };
+        this.search.pageNumber = this.search.page; // Sincronizar pageNumber con page
+        this.totalItems = Array.from({ length: this.search.totalPages ? this.search.totalPages : 0 }, (_, i) => i + 1);
         this.categorySignal.set(response.data);
       },
       error: (err: any) => {
@@ -51,7 +53,7 @@ export class CategoryService extends BaseService<ICategory> {
   }
 
   update(item: ICategory) {
-    this.customEdit(item).subscribe({
+    this.customEditwithid(item).subscribe({
       next: (response: IResponse<ICategory>) => {
         this.alertService.displayAlert('success', response.message, 'center', 'top', ['success-snackbar']);
         this.getAll();
@@ -62,6 +64,7 @@ export class CategoryService extends BaseService<ICategory> {
       }
     });
   }
+
 
   delete(item: ICategory) {
     this.del(item.id).subscribe({

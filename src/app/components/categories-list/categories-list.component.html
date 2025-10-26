@@ -1,0 +1,38 @@
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let category of categories">
+        <td>{{ category.id }}</td>
+        <td>{{ category.name }}</td>
+        <td>{{ category.description }}</td>
+        <td class="text-center">
+          <button 
+            class="btn btn-sm btn-warning me-2" 
+            type="button"
+            (click)="onEdit(category)"
+            title="Edit">
+            <i class="fa fa-edit"></i>
+          </button>
+          <button 
+            class="btn btn-sm btn-danger" 
+            type="button"
+            (click)="onDelete(category)"
+            title="Delete">
+            <i class="fa fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="categories.length === 0">
+        <td colspan="4" class="text-center">No categories found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

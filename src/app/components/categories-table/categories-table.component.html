@@ -1,0 +1,36 @@
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (categories.length === 0) {
+        <tr>
+          <td colspan="4" class="text-center">No categories found</td>
+        </tr>
+      }
+      @for (category of categories; track category.id) {
+        <tr>
+          <td>{{ category.id }}</td>
+          <td>{{ category.name }}</td>
+          <td>{{ category.description }}</td>
+          <td>
+            <button (click)="callEditMethod.emit(category)" class="btn btn-sm btn-warning me-2" type="button">
+              Edit
+            </button>
+            @if (areActionsAvailable) {
+              <button (click)="callDeleteMethod.emit(category)" class="btn btn-sm btn-danger" type="button">
+                Delete
+              </button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

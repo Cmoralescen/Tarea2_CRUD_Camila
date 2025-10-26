@@ -1,0 +1,46 @@
+<form [formGroup]="form">
+  <div>
+    <h2 class="mb-0">{{ isEdit ? 'Edit Category' : 'Add Category' }}</h2>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="mb-2">
+        <label class="mb-1" for="name">Name*</label>
+        <input id="name" formControlName="name" type="text" class="form-control">
+        @if (form.controls['name'].invalid && (form.controls['name'].dirty || form.controls['name'].touched)) {
+          <p class="text-danger my-1 p-absolute">
+            @if (form.controls['name'].errors?.['required']) {
+              Name is required
+            }
+            @if (form.controls['name'].errors?.['minlength']) {
+              Name must be at least 3 characters
+            }
+          </p>
+        }
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="mb-2">
+        <label class="mb-1" for="description">Description*</label>
+        <input id="description" formControlName="description" type="text" class="form-control">
+        @if (form.controls['description'].invalid && (form.controls['description'].dirty || form.controls['description'].touched)) {
+          <p class="text-danger my-1 p-absolute">
+            @if (form.controls['description'].errors?.['required']) {
+              Description is required
+            }
+            @if (form.controls['description'].errors?.['minlength']) {
+              Description must be at least 5 characters
+            }
+          </p>
+        }
+      </div>
+    </div>
+    <div class="col-4 d-flex align-items-center mt-3">
+      <div class="">
+        <button (click)="callSaveMethod.emit(form.value)" [disabled]="form.invalid" class="btn btn-primary" type="button">
+          {{ isEdit ? 'Update' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
