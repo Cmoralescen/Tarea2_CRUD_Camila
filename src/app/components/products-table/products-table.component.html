@@ -24,7 +24,7 @@
           <td>{{ product.description }}</td>
           <td>{{ product.price ? '$' + product.price : 'N/A' }}</td>
           <td>{{ product.stock }}</td>
-          <td>{{ product.category?.name || 'N/A' }}</td>
+          <td>{{ product.category?.name }}</td>
           <td>
             <button (click)="callEditMethod.emit(product)" class="btn btn-sm btn-warning me-2" type="button">
               Edit

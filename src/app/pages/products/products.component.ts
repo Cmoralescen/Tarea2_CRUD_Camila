@@ -59,14 +59,22 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  edit(product: IProduct) {
-    this.isEdit = true;
-    this.form.patchValue({
-      ...product,
-      categoryId: product.category?.id
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+ edit(product: IProduct) {
+
+  
+  this.isEdit = true;
+  this.form.patchValue({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    stock: product.stock,
+    categoryId: product.category?.id
+  });
+  
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
   delete(product: IProduct) {
     if (confirm(`Are you sure you want to delete the product "${product.name}"?`)) {
