@@ -1,39 +1,43 @@
 <div class="container-fluid p-4">
   <div class="row mb-4">
     <div class="col-12">
-      <h1>Manage Categories</h1>
+      <h1 class="card-title mb-3 text-primary fw-bold fs-1">{{ isAdmin ? 'Manage Categories' : 'Browse Categories' }}</h1>
     </div>
   </div>
-
   <div class="row mb-4">
     <div class="col-12">
       <div class="card">
         <div class="card-body">
-          <app-categories-form 
-            [form]="form" 
-            [isEdit]="isEdit"
-            (callSaveMethod)="save($event)">
-          </app-categories-form>
+          @if (isAdmin) {
+            <app-categories-form
+              [form]="form"
+              [isEdit]="isEdit"
+              (callSaveMethod)="save($event)">
+            </app-categories-form>
+          } @else {
+            <app-categories-search
+              (callSearchMethod)="searchCategories($event)">
+            </app-categories-search>
+          }
         </div>
       </div>
     </div>
   </div>
-
   <div class="row">
     <div class="col-12">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title mb-3">Categories List</h3>
-          <app-categories-table 
-            [areActionsAvailable]="areActionsAvailable"
+          <h3 class="card-title mb-3 text-primary fw-bold fs-1">Categories List</h3>
+          <app-categories-table
+            [areActionsAvailable]="isAdmin"
             [categories]="categoryService.categories$()"
             (callEditMethod)="edit($event)"
             (callDeleteMethod)="delete($event)">
           </app-categories-table>
-          
+         
           @if (categoryService.search.totalPages && categoryService.search.totalPages > 1) {
             <div class="mt-3">
-              <app-pagination 
+              <app-pagination
                 [service]="categoryService">
               </app-pagination>
             </div>

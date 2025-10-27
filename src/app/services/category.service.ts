@@ -10,6 +10,7 @@ import { AlertService } from './alert.service';
 export class CategoryService extends BaseService<ICategory> {
   protected override source: string = 'categories';
   private categorySignal = signal<ICategory[]>([]);
+  private allCategories: ICategory[] = [];
 
   get categories$() {
     return this.categorySignal;
@@ -28,15 +29,34 @@ export class CategoryService extends BaseService<ICategory> {
   getAll() {
     this.findAllWithParams({ page: this.search.page, size: this.search.size }).subscribe({
       next: (response: IResponse<ICategory[]>) => {
-        this.search = { ...this.search, ...response.meta };
-        this.search.pageNumber = this.search.page; 
-        this.totalItems = Array.from({ length: this.search.totalPages ? this.search.totalPages : 0 }, (_, i) => i + 1);
+        this.search = {...this.search, ...response.meta};
+        this.totalItems = Array.from({length: this.search.totalPages ? this.search.totalPages : 0}, (_, i) => i + 1);
+        this.allCategories = response.data;
         this.categorySignal.set(response.data);
       },
       error: (err: any) => {
         console.error('error', err);
       }
     });
+  }
+
+  filterCategories(filters: any) {
+    let filteredCategories = [...this.allCategories];
+    if (filters.name && filters.name.trim() !== '') {
+      filteredCategories = filteredCategories.filter(category =>
+        category.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+    if (filters.description && filters.description.trim() !== '') {
+      filteredCategories = filteredCategories.filter(category =>
+        category.description.toLowerCase().includes(filters.description.toLowerCase())
+      );
+    }
+    this.categorySignal.set(filteredCategories);
+  }
+
+  clearFilters() {
+    this.categorySignal.set(this.allCategories);
   }
 
   save(item: ICategory) {

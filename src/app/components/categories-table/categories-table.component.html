@@ -5,13 +5,15 @@
         <th>ID</th>
         <th>Name</th>
         <th>Description</th>
-        <th>Actions</th>
+        @if (areActionsAvailable) {
+          <th>Actions</th>
+        }
       </tr>
     </thead>
     <tbody>
       @if (categories.length === 0) {
         <tr>
-          <td colspan="4" class="text-center">No categories found</td>
+          <td [attr.colspan]="areActionsAvailable ? 4 : 3" class="text-center">No categories found</td>
         </tr>
       }
       @for (category of categories; track category.id) {
@@ -19,16 +21,16 @@
           <td>{{ category.id }}</td>
           <td>{{ category.name }}</td>
           <td>{{ category.description }}</td>
-          <td>
-            <button (click)="callEditMethod.emit(category)" class="btn btn-sm btn-warning me-2" type="button">
-              Edit
-            </button>
-            @if (areActionsAvailable) {
+          @if (areActionsAvailable) {
+            <td>
+              <button (click)="callEditMethod.emit(category)" class="btn btn-sm btn-warning me-2" type="button">
+                Edit
+              </button>
               <button (click)="callDeleteMethod.emit(category)" class="btn btn-sm btn-danger" type="button">
                 Delete
               </button>
-            }
-          </td>
+            </td>
+          }
         </tr>
       }
     </tbody>

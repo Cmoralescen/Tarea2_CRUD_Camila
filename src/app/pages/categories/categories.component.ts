@@ -2,10 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoriesFormComponent } from '../../components/categories-form/categories-form.component';
+import { CategoriesSearchComponent } from '../../components/categories-search/categories-search.component';
 import { CategoriesTableComponent } from '../../components/categories-table/categories-table.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { CategoryService } from '../../services/category.service';
-import { ICategory } from '../../interfaces';
+import { AuthService } from '../../services/auth.service';
+import { ICategory, IRoleType } from '../../interfaces';
 
 @Component({
   selector: 'app-categories',
@@ -13,6 +15,7 @@ import { ICategory } from '../../interfaces';
   imports: [
     CommonModule,
     CategoriesFormComponent,
+    CategoriesSearchComponent,
     CategoriesTableComponent,
     PaginationComponent
   ],
@@ -21,15 +24,21 @@ import { ICategory } from '../../interfaces';
 })
 export class CategoriesComponent implements OnInit {
   categoryService: CategoryService = inject(CategoryService);
+  authService: AuthService = inject(AuthService);
   private fb: FormBuilder = inject(FormBuilder);
-
   form!: FormGroup;
   isEdit: boolean = false;
-  areActionsAvailable: boolean = true;
+  isAdmin: boolean = false;
 
   ngOnInit(): void {
     this.initForm();
+    this.checkUserRole();
     this.categoryService.getAll();
+  }
+
+  checkUserRole() {
+    this.isAdmin = this.authService.hasRole(IRoleType.admin) ||
+                   this.authService.hasRole(IRoleType.superAdmin);
   }
 
   initForm() {
@@ -66,5 +75,18 @@ export class CategoriesComponent implements OnInit {
   resetForm() {
     this.form.reset();
     this.isEdit = false;
+  }
+
+  searchCategories(filters: any) {
+    console.log('Search filters:', filters);
+   
+    const isEmpty = !filters.name &&
+                    !filters.description;
+   
+    if (isEmpty) {
+      this.categoryService.clearFilters();
+    } else {
+      this.categoryService.filterCategories(filters);
+    }
   }
 }
